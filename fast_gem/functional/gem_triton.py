@@ -1,5 +1,6 @@
 from typing import Union
 
+from fast_gem.functional import utils as fu
 import torch as th
 import triton
 import triton.language as tl
@@ -92,8 +93,8 @@ class GeMOps(th.autograd.Function):
     def forward(ctx, x: Tensor, p: Union[float, Tensor] = 3.0, eps: float = 1e-6, dim: int = -2, keepdim=True):
         ctx.is_p_tensor = isinstance(p, Tensor)
         dim = x.ndim + dim if dim < 0 else dim
-        M = tu.cummul(*x.shape[:dim])
-        N = tu.cummul(*x.shape[dim:])
+        M = fu.cummul(*x.shape[:dim])
+        N = fu.cummul(*x.shape[dim:])
         y = x.new_empty(list(x.shape[:dim]) + ([1 for _ in range(x.ndim - dim)] if keepdim else []))
 
         BLK_N = max(min(triton.next_power_of_2(N), 4096), 32)
@@ -118,8 +119,8 @@ class GeMOps(th.autograd.Function):
             x, y = ctx.saved_tensors
             p, eps, dim = ctx.params
 
-        M = tu.cummul(*x.shape[:dim])
-        N = tu.cummul(*x.shape[dim:])
+        M = fu.cummul(*x.shape[:dim])
+        N = fu.cummul(*x.shape[dim:])
         dx = th.empty_like(x)
         dp = None
         if ctx.is_p_tensor:

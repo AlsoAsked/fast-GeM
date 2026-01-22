@@ -1,8 +1,8 @@
 from typing import Union
 
+from fast_gem.functional import utils as fu
 import torch as th
 import torch.nn.functional as F
-from kitsu.utils import cummul
 from torch import Tensor
 
 
@@ -25,8 +25,8 @@ def gem_torch(x: Tensor, p=3, eps=1e-6, dim=-2, keepdim=True):
     dim = x.ndim + dim if dim < 0 else dim
     yshape = list(x.shape[:dim]) + ([1 for _ in range(x.ndim - dim)] if keepdim else [])
 
-    M = cummul(*x.shape[:dim])
-    N = cummul(*x.shape[dim:])
+    M = fu.cummul(*x.shape[:dim])
+    N = fu.cummul(*x.shape[dim:])
     x = x.view(M, N)  # m n
 
     x = x.clamp(eps).pow_(p)
