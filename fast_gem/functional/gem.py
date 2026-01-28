@@ -23,7 +23,7 @@ _fn = {
 
 
 def gem(x: Tensor, p: Union[float, Tensor] = 3.0, eps: float = 1e-6, dim: int = -2, keepdim=True, fused=True):
-    assert x.device == th.device("cpu") ^ fused, "Cannot use fused operation with CPU tensors"
+    assert x.device.type == "cuda" or not fused, "Cannot use fused operation with CPU tensors"
     assert (x.ndim, fused) in _fn, f"Unknown input shape: {x.shape}"
 
     return _fn[(x.ndim, fused)](x, p, eps, keepdim=keepdim)
