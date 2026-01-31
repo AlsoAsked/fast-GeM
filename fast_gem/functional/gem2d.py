@@ -183,7 +183,7 @@ class GeMOps2d(th.autograd.Function):
 
         B, C, L, M = x.shape
         str_x_B, str_x_C, str_x_L, str_x_M = x.stride()
-        str_y_B, str_y_C = y.stride()
+        str_y_B, str_y_C = y.stride(0), y.stride(1)
 
         dx = th.empty_like(x)
         dp = None
