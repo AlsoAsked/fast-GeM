@@ -14,6 +14,7 @@ class GeM(nn.Module):
         eps: float = 1e-6,
         p_trainable: bool = True,
         keepdim=True,
+        fused=True,
     ):
         """
         Generalized Mean (GeM) Pooling Layer.
@@ -25,6 +26,7 @@ class GeM(nn.Module):
         - p (float | int | Tensor): The pooling parameter. It can be trainable by using `p_trainable=True` (default=True).
         - eps (float): A small value added to the input tensor to avoid numerical instability.
         - p_trainable (bool): If True, `p` is a learnable parameter. Otherwise, `p` is fixed.
+        - fused (bool): Whether to use the fused (Triton) operation. Only supported on CUDA tensors.
         """
         super().__init__()
 
@@ -40,9 +42,10 @@ class GeM(nn.Module):
 
         self.eps = eps
         self.keepdim = keepdim
+        self.fused = fused
 
     def forward(self, x: Tensor):
-        return gem(x, self.p, self.eps, keepdim=self.keepdim)
+        return gem(x, self.p, self.eps, keepdim=self.keepdim, fused=self.fused)
 
     def __repr__(self):
         p_val = self.p
